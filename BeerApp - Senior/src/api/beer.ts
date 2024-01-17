@@ -4,7 +4,7 @@ import { ApiParams } from '../types';
 
 const getBeer = (id: string) => axios.get(`${API}breweries/${id}`);
 
-const getBeerList = (params?: ApiParams) => axios.get(`${API}breweries/`, { params });
+const getBeerList = (params?: ApiParams) => axios.get(`${API}breweries`, { params });
 
 /**
  * @param size Int between 1 and 50. Default is 3.
