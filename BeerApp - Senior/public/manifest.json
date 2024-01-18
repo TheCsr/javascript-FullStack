@@ -1,6 +1,7 @@
 {
   "short_name": "BW",
   "name": "BeerWiki",
+  "description": "Wikipedia for Beer",
   "icons": [
     {
       "src": "favicon.ico",
