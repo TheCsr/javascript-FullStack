@@ -8,13 +8,21 @@ import {
   Paper,
   TextField,
   Link,
-  Card,
-  CardContent,
+  Avatar,
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  ListItem,
 } from "@mui/material";
+import SportsBar from "@mui/icons-material/SportsBar";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import styles from "./Home.module.css";
-import BeerList from "../BeerList";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [beerList, setBeerList] = useState<Array<Beer>>([]);
   const [filterTerm, setFilterTerm] = useState<string>("");
   const [savedList, setSavedList] = useState<Array<Beer>>([]);
@@ -25,6 +33,8 @@ const Home = () => {
   const handlefetchBeer = () => {
     fetchData(setBeerList);
   };
+
+  console.log("selected", selected);
 
   const handleCheckboxChange = (beerId: string) => {
     const isSelected = selected.includes(beerId);
@@ -61,9 +71,11 @@ const Home = () => {
   const handleRemoveList = () => {
     setSavedList([]);
     setSelected([]);
-    localStorage.removeItem('savedList');
-    localStorage.removeItem('selected');
+    localStorage.removeItem("savedList");
+    localStorage.removeItem("selected");
   };
+
+  const onBeerClick = (id: string) => navigate(`/beer/${id}`);
 
   useEffect(() => {
     // Load favorite list from local storage
@@ -73,7 +85,7 @@ const Home = () => {
       let storedSavedList: Beer[] = JSON.parse(storedDataArray) || [];
       setSavedList(storedSavedList);
     }
-    if(storedSelectedIds) {
+    if (storedSelectedIds) {
       let storedSelectedList = JSON.parse(storedSelectedIds) || [];
       setSelected(storedSelectedList);
     }
@@ -98,20 +110,37 @@ const Home = () => {
                   </Button>
                 </div>
               </div>
-              <div></div>
-              <ul className={styles.list}>
+              <List>
                 {filteredBeerList.map((beer, index) => (
-                  <li key={index.toString()}>
-                    <Checkbox
-                      checked={selected.includes(beer.id)}
-                      onChange={() => handleCheckboxChange(beer.id)}
-                    />
-                    <Link component={RouterLink} to={`/beer/${beer.id}`}>
-                      {beer.name}
-                    </Link>
-                  </li>
+                  <ListItem
+                    key={beer.id}
+                    secondaryAction={
+                      selected.includes(beer.id) ? (
+                        <FavoriteIcon
+                          color="action"
+                          onClick={() => handleCheckboxChange(beer.id)}
+                        />
+                      ) : (
+                        <FavoriteBorderIcon
+                          onClick={() => handleCheckboxChange(beer.id)}
+                        />
+                      )
+                    }
+                  >
+                    <ListItemButton onClick={onBeerClick.bind(this, beer.id)}>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <SportsBar />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={beer.name}
+                        secondary={beer.brewery_type}
+                      />
+                    </ListItemButton>
+                  </ListItem>
                 ))}
-              </ul>
+              </List>
             </div>
           </Paper>
 
@@ -127,17 +156,24 @@ const Home = () => {
                   Remove all items
                 </Button>
               </div>
-              <ul className={styles.list}>
+              <List>
                 {savedList.map((beer, index) => (
-                  <li key={index.toString()}>
-                    <Checkbox />
-                    <Link component={RouterLink} to={`/beer/${beer.id}`}>
-                      {beer.name}
-                    </Link>
-                  </li>
+                  <ListItemButton
+                    key={index.toString()}
+                    onClick={onBeerClick.bind(this, beer.id)}
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <SportsBar />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={beer.name}
+                      secondary={beer.brewery_type}
+                    />
+                  </ListItemButton>
                 ))}
-                {!savedList.length && <p>No saved items</p>}
-              </ul>
+              </List>
             </div>
           </Paper>
         </main>
