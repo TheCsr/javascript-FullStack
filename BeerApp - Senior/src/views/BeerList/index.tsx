@@ -9,12 +9,16 @@ const BeerList = () => {
   const navigate = useNavigate();
   const [beerList, setBeerList] = useState<Array<Beer>>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 5;
-  const [query, setQuery] = useState<string>("");
+  const perPage = 10;
+  const [filterTerm, setFilterTerm] = useState<string>("");
   const [sort, setSort] = useState<string>("asc");
 
   // eslint-disable-next-line
-  useEffect(fetchData.bind(this, setBeerList, { page: currentPage, per_page: perPage }), [currentPage]);
+  useEffect(fetchData.bind(this, setBeerList, { page: currentPage, per_page: perPage, sort: 'asc' }), [currentPage]);
+
+  const filteredBeerList = beerList.filter((beer) =>
+    beer.name.toLowerCase().includes(filterTerm.toLowerCase())
+  );
 
   const onBeerClick = (id: string) => navigate(`/beer/${id}`);
   console.log("currentPage", currentPage);
@@ -30,11 +34,11 @@ const BeerList = () => {
           <TextField
             label="Filter..."
             variant="outlined"
-            // value={filterTerm}
-            // onChange={(e) => setFilterTerm(e.target.value)}
+            value={filterTerm}
+            onChange={(e) => setFilterTerm(e.target.value)}
           />
           <List>
-            {beerList.map((beer) => (
+            {filteredBeerList.map((beer) => (
               <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id)}>
                 <ListItemAvatar>
                   <Avatar>
@@ -46,7 +50,7 @@ const BeerList = () => {
             ))}
           </List>
           <Pagination
-            count={20}
+            count={100}
             page={currentPage}
             onChange={(e, value) => setCurrentPage(value)}
             color="primary"
